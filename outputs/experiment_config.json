@@ -1,0 +1,36 @@
+{
+  "test_size": 0.2,
+  "seeds": [
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
+  ],
+  "support_fractions": [
+    0.05,
+    0.1
+  ],
+  "n_clusters": 2,
+  "positive_label": 0,
+  "output_dir": "outputs",
+  "report_path": "reports\\informe_resultados.md",
+  "kmeans_n_init": 20,
+  "viability_label_accuracy": 0.9,
+  "viability_gap": 0.05,
+  "algorithms": [
+    "kmeans",
+    "hierarchical",
+    "gmm"
+  ],
+  "classifiers": [
+    "logistic_regression",
+    "svm_rbf"
+  ],
+  "first_seed_only_figures": true
+}
