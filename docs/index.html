@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Wiki técnica del experimento de etiquetado automático asistido por clustering." />
+    <title>AutoLabel Lab — Wiki del proyecto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="AutoLabel Lab, inicio">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>AutoLabel <b>Lab</b></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <a href="#pipeline">Pipeline</a>
+        <a href="#metodo">Método</a>
+        <a href="#reproducir">Reproducir</a>
+      </nav>
+      <a class="repo-link" href="https://github.com/SantiagoMO138/clustering-auto-labeling" target="_blank" rel="noreferrer">
+        Ver repositorio <span aria-hidden="true">↗</span>
+      </a>
+    </header>
+
+    <main>
+      <section class="hero section" id="inicio">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> DOCUMENTACIÓN TÉCNICA · v0.1</p>
+          <h1>Etiquetado automático<br />mediante <em>clustering</em></h1>
+          <p class="hero-text">Experimento reproducible de generación de pseudoetiquetas para clasificación diagnóstica binaria.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#pipeline">Ver pipeline <span>↓</span></a>
+            <a class="button button-quiet" href="#reproducir">Ejecución</a>
+          </div>
+          <dl class="hero-facts">
+            <div><dt>Dataset</dt><dd>Breast Cancer Wisconsin</dd></div>
+            <div><dt>Enfoque</dt><dd>Clustering asistido</dd></div>
+            <div><dt>Entorno</dt><dd>Python 3.11+</dd></div>
+          </dl>
+        </div>
+        <div class="hero-art" aria-label="Espacio de características con grupos de observaciones">
+          <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+          <div class="cluster cluster-green"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="cluster cluster-orange"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="hero-card card-data"><span>30</span><small>variables</small></div>
+          <div class="hero-card card-model"><span>3</span><small>algoritmos</small></div>
+          <div class="axis axis-x"></div><div class="axis axis-y"></div>
+        </div>
+      </section>
+
+      <section class="intro-band" aria-label="Principios metodológicos">
+        <p>CLUSTERING · SIN ETIQUETAS CLÍNICAS</p>
+        <span></span>
+        <p>MAPEO · SUBCONJUNTO EXPERTO</p>
+        <span></span>
+        <p>EVALUACIÓN · CONJUNTO DE PRUEBA</p>
+      </section>
+
+      <section class="section chapter" id="pipeline">
+        <div class="chapter-heading">
+          <p class="eyebrow"><span></span> 01 · PIPELINE EXPERIMENTAL</p>
+          <h2>Flujo de procesamiento<br />y evaluación</h2>
+          <p>Partición estratificada · escalado basado en entrenamiento · clustering binario · pseudoetiquetado.</p>
+        </div>
+
+        <div class="architecture" aria-label="Diagrama de arquitectura del pipeline">
+          <div class="arch-stage stage-source">
+            <span class="stage-number">A</span>
+            <div class="stage-icon database-icon"><b></b><b></b><b></b></div>
+            <h3>Fuente</h3>
+            <p>Dataset canónico de scikit-learn</p>
+            <code>569 × 30</code>
+          </div>
+          <div class="arch-connector"><i></i><span>carga</span></div>
+          <div class="arch-stage stage-prepare">
+            <span class="stage-number">B</span>
+            <div class="stage-icon scale-icon"><b></b><b></b><b></b></div>
+            <h3>Preparación</h3>
+            <p>Partición estratificada y escalado</p>
+            <code>train / test</code>
+          </div>
+          <div class="arch-connector"><i></i><span>sin etiquetas</span></div>
+          <div class="arch-stage stage-cluster">
+            <span class="stage-number">C</span>
+            <div class="stage-icon cluster-icon"><b></b><b></b><b></b><b></b><b></b></div>
+            <h3>Clustering</h3>
+            <p>K-Means · Ward · GMM</p>
+            <code>k = 2</code>
+          </div>
+          <div class="arch-connector"><i></i><span>mapeo</span></div>
+          <div class="arch-stage stage-label">
+            <span class="stage-number">D</span>
+            <div class="stage-icon tag-icon"><b></b></div>
+            <h3>Pseudoetiquetas</h3>
+            <p>Apoyo experto estratificado</p>
+            <code>5% / 10%</code>
+          </div>
+          <div class="arch-connector"><i></i><span>entrena</span></div>
+          <div class="arch-stage stage-model">
+            <span class="stage-number">E</span>
+            <div class="stage-icon model-icon"><b></b><b></b><b></b></div>
+            <h3>Clasificación</h3>
+            <p>Logística y SVM RBF</p>
+            <code>comparación</code>
+          </div>
+        </div>
+
+        <div class="architecture-note"><span>RESTRICCIÓN</span><p>Las etiquetas reales no se transfieren al algoritmo de clustering.</p></div>
+        <div class="pipeline-detail" aria-label="Diagrama detallado de las ramas de evaluación">
+          <div class="detail-source"><span>DATOS</span><b>X</b><small>30 variables</small></div>
+          <div class="detail-arrow">→</div>
+          <div class="detail-split"><span>PARTICIÓN ESTRATIFICADA</span><div><b>80%</b><i></i><b>20%</b></div><small>entrenamiento / prueba</small></div>
+          <div class="detail-branch">
+            <span class="branch-title">RAMA NO SUPERVISADA</span>
+            <div class="branch-row"><b>Train</b><i>→</i><strong>StandardScaler</strong><i>→</i><strong>K-Means / Ward / GMM</strong><i>→</i><strong>Mapeo experto</strong><i>→</i><b>Pseudoetiquetas</b></div>
+          </div>
+          <div class="detail-branch reference">
+            <span class="branch-title">RAMA DE REFERENCIA</span>
+            <div class="branch-row"><b>Train</b><i>→</i><strong>Etiquetas reales completas</strong><i>→</i><b>Clasificador base</b></div>
+          </div>
+          <div class="detail-eval"><span>CONJUNTO DE PRUEBA</span><b>Evaluación</b><small>métricas de clasificación</small></div>
+        </div>
+      </section>
+
+      <section class="section system-map" id="metodo">
+        <div class="chapter-heading compact">
+          <p class="eyebrow"><span></span> 02 · ESTRUCTURA DEL CÓDIGO</p>
+          <h2>Módulos del<br />repositorio</h2>
+        </div>
+        <div class="module-grid">
+          <article class="module-card featured">
+            <div class="module-card-top"><span class="module-index">01</span><span class="file-chip">pipeline.py</span></div>
+            <h3>Orquestación</h3>
+            <p>Carga · partición · escalado · ejecución · agregación.</p>
+            <ul><li>Validación de configuración</li><li>Separación train / test</li><li>Flujo reproducible</li></ul>
+          </article>
+          <article class="module-card">
+            <div class="module-card-top"><span class="module-index">02</span><span class="file-chip">labeling.py</span></div>
+            <h3>Correspondencia</h3>
+            <p>Clusters binarios → clases clínicas.</p>
+            <ul><li>Algoritmo húngaro</li><li>Mapeo uno a uno</li><li>Apoyo de experto</li></ul>
+          </article>
+          <article class="module-card">
+            <div class="module-card-top"><span class="module-index">03</span><span class="file-chip">models.py</span></div>
+            <h3>Modelado</h3>
+            <p>Entrenamiento supervisado con tres esquemas de etiquetas.</p>
+            <ul><li>Regresión logística</li><li>SVM con kernel RBF</li><li>Probabilidades calibradas</li></ul>
+          </article>
+          <article class="module-card">
+            <div class="module-card-top"><span class="module-index">04</span><span class="file-chip">metrics.py</span></div>
+            <h3>Métricas</h3>
+            <p>Métricas de clasificación y concordancia externa.</p>
+            <ul><li>Sensibilidad maligna</li><li>ROC-AUC y F1</li><li>ARI y NMI</li></ul>
+          </article>
+          <article class="module-card dark">
+            <div class="module-card-top"><span class="module-index">05</span><span class="file-chip">config.py</span></div>
+            <h3>Configuración<br />experimental</h3>
+            <p>Parámetros deterministas del estudio.</p>
+            <a href="#reproducir">Parámetros <span>→</span></a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section flow-section">
+        <div class="flow-copy">
+          <p class="eyebrow"><span></span> 03 · MAPEO DE ETIQUETAS</p>
+          <h2>Correspondencia cluster–clase</h2>
+          <p>Subconjunto de apoyo estratificado · asignación húngara · propagación de pseudoetiquetas.</p>
+        </div>
+        <div class="flow-diagram" aria-label="Diagrama del mapeo de clusters a clases">
+          <div class="flow-column"><span class="flow-label">Clusters</span><div class="pill pill-green"><i></i> Cluster 0</div><div class="pill pill-orange"><i></i> Cluster 1</div></div>
+          <div class="flow-middle"><span>subconjunto<br />experto</span><div class="matching-lines"><i></i><i></i></div><b>↔</b><small>asignación<br />óptima</small></div>
+          <div class="flow-column"><span class="flow-label">Pseudoetiquetas</span><div class="pill pill-dark"><i></i> Maligno</div><div class="pill pill-light"><i></i> Benigno</div></div>
+        </div>
+      </section>
+
+      <section class="section protocol" id="reproducir">
+        <div class="protocol-title">
+          <p class="eyebrow"><span></span> 04 · REPRODUCCIÓN</p>
+          <h2>Entorno y<br /><em>ejecución</em></h2>
+        </div>
+        <div class="protocol-content">
+          <ol class="steps">
+            <li><span>01</span><div><h3>Dependencias</h3><p>requirements.txt · Python 3.11+</p></div></li>
+            <li><span>02</span><div><h3>Pipeline</h3><p>run_experiment.py</p></div></li>
+            <li><span>03</span><div><h3>Pruebas</h3><p>Particiones · mapeo · reproducibilidad</p></div></li>
+          </ol>
+          <div class="terminal" aria-label="Comandos de ejecución">
+            <div class="terminal-bar"><span></span><span></span><span></span><b>PowerShell</b></div>
+            <pre><code><small># instalar dependencias</small>
+python -m pip install -r requirements.txt
+
+<small># ejecutar experimento</small>
+python run_experiment.py
+
+<small># ejecutar pruebas</small>
+pytest -q</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section guardrails">
+        <div class="guardrail-mark">i</div>
+        <div><p class="eyebrow"><span></span> ALCANCE</p><h2>Estudio<br />metodológico</h2></div>
+        <p>Dataset clínico curado · tamaño limitado · sin uso diagnóstico · sin extrapolación clínica.</p>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>AutoLabel <b>Lab</b></span></a>
+      <p>WIKI TÉCNICA · ETIQUETADO AUTOMÁTICO MEDIANTE CLUSTERING</p>
+      <a href="https://github.com/SantiagoMO138/clustering-auto-labeling" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </footer>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
