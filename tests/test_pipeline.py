@@ -28,3 +28,12 @@ def test_small_experiment_is_reproducible_and_metric_ranges_are_valid(tmp_path):
     assert first["classifier_results"].equals(second["classifier_results"])
     metric_columns = ["accuracy", "malignant_sensitivity", "specificity", "precision", "f1", "roc_auc"]
     assert ((first["classifier_results"][metric_columns] >= 0) & (first["classifier_results"][metric_columns] <= 1)).all().all()
+
+
+def test_support_real_baseline_is_recorded_once_per_seed_fraction_and_classifier(tmp_path):
+    config = ExperimentConfig(seeds=(101, 102), output_dir=tmp_path / "one", report_path=tmp_path / "one.md")
+    results = run_experiment(config, create_artifacts=False)
+    support_rows = results["classifier_results"].query("scheme == 'support_real'")
+    expected = len(config.seeds) * len(config.support_fractions) * len(config.classifiers)
+    assert len(support_rows) == expected
+    assert support_rows.groupby(["seed", "support_fraction", "classifier"]).size().eq(1).all()

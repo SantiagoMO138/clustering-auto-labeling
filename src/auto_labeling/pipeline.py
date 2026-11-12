@@ -95,12 +95,26 @@ def run_experiment(config: ExperimentConfig | None = None, create_artifacts: boo
                 "classifier": classifier_name, "scheme": "full_real", **baseline_metrics,
             })
 
+        support_indices_by_fraction: dict[float, np.ndarray] = {}
+        for fraction in config.support_fractions:
+            support_indices = stratified_support_indices(y_train, fraction, seed)
+            support_indices_by_fraction[fraction] = support_indices
+            for classifier_name in config.classifiers:
+                support_metrics = fit_and_score_classifier(
+                    classifier_name, X_train[support_indices], y_train[support_indices], X_test, y_test,
+                    config.positive_label, seed,
+                )
+                classifier_rows.append({
+                    "seed": seed, "algorithm": "support_real", "support_fraction": fraction,
+                    "classifier": classifier_name, "scheme": "support_real", **support_metrics,
+                })
+
         clusters_by_algorithm: dict[str, np.ndarray] = {}
         for algorithm in config.algorithms:
             cluster_labels, _ = fit_clusterer(algorithm, X_train, seed, config)
             clusters_by_algorithm[algorithm] = cluster_labels
             for fraction in config.support_fractions:
-                support_indices = stratified_support_indices(y_train, fraction, seed)
+                support_indices = support_indices_by_fraction[fraction]
                 mapping = map_clusters_to_classes(cluster_labels[support_indices], y_train[support_indices])
                 pseudo_labels = apply_cluster_mapping(cluster_labels, mapping)
                 cluster_rows.append(_base_rows(seed, algorithm, fraction, cluster_labels, X_train, y_train, pseudo_labels))
@@ -112,14 +126,6 @@ def run_experiment(config: ExperimentConfig | None = None, create_artifacts: boo
                     classifier_rows.append({
                         "seed": seed, "algorithm": algorithm, "support_fraction": fraction,
                         "classifier": classifier_name, "scheme": "generated", **generated_metrics,
-                    })
-                    support_metrics = fit_and_score_classifier(
-                        classifier_name, X_train[support_indices], y_train[support_indices], X_test, y_test,
-                        config.positive_label, seed,
-                    )
-                    classifier_rows.append({
-                        "seed": seed, "algorithm": "support_real", "support_fraction": fraction,
-                        "classifier": classifier_name, "scheme": "support_real", **support_metrics,
                     })
 
         if visual_data is None or not config.first_seed_only_figures:
